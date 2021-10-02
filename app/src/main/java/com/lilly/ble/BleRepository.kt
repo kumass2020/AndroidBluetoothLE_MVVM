@@ -1,25 +1,37 @@
 package com.lilly.ble
 
+import android.content.ContextWrapper;
+import android.app.Activity
+import android.app.Notification
+import android.app.PendingIntent
 import android.bluetooth.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
+import android.content.Context
 import android.content.Context.BLUETOOTH_SERVICE
+import android.content.Intent
 import android.os.Build
 import android.os.ParcelUuid
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.TypedArrayUtils.getString
+import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.lifecycle.MutableLiveData
+import com.lilly.ble.ui.main.MainActivity
 import com.lilly.ble.util.BluetoothUtils
 import com.lilly.ble.util.Event
+import com.lilly.ble.viewmodel.MainViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.util.*
 import kotlin.concurrent.schedule
 
-class BleRepository {
+class
+
+BleRepository {
 
     private val TAG = "Central"
 
@@ -64,6 +76,18 @@ class BleRepository {
     val listUpdate = MutableLiveData<Event<ArrayList<BluetoothDevice>?>>()
     val scrollDown = MutableLiveData<Event<Boolean>>()
 
+    val CHANNEL_ID = "FG0000"
+
+    val pendingIntent: PendingIntent =
+        Intent(MyApplication.applicationContext(), MainActivity::class.java).let { notificationIntent ->
+            PendingIntent.getActivity(MyApplication.applicationContext(), 0, notificationIntent, 0)
+        }
+
+    val notification: Notification = Notification.Builder(MyApplication.applicationContext(), CHANNEL_ID)
+        .setContentTitle(MyApplication.applicationContext().getString(R.string.notification_title))
+        .setContentText(MyApplication.applicationContext().getString(R.string.notification_message))
+        .setContentIntent(pendingIntent)
+        .build()
 
     fun startScan() {
         // check ble adapter and ble enabled

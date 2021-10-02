@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">LillyBle</string>
+    <string name="notification_title">abc</string>
+    <string name="notification_message">def</string>
 </resources>
