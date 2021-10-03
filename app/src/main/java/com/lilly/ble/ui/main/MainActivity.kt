@@ -1,6 +1,8 @@
 package com.lilly.ble.ui.main
 
 import android.app.Activity
+import android.app.Notification
+import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
@@ -18,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.lilly.ble.MyApplication
 import com.lilly.ble.PERMISSIONS
 import com.lilly.ble.R
 import com.lilly.ble.REQUEST_ALL_PERMISSION
@@ -69,6 +72,8 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+
     private fun initObserver(binding: ActivityMainBinding){
         viewModel.requestEnableBLE.observe(this, {
             it.getContentIfNotHandled()?.let {

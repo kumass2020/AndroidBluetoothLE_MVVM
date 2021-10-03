@@ -76,18 +76,20 @@ BleRepository {
     val listUpdate = MutableLiveData<Event<ArrayList<BluetoothDevice>?>>()
     val scrollDown = MutableLiveData<Event<Boolean>>()
 
-    val CHANNEL_ID = "FG0000"
+    fun startMyForeground() {
+        val CHANNEL_ID = "FG0001"
+        val pendingIntent: PendingIntent =
+            Intent(MyApplication.applicationContext(), MainActivity::class.java).let { notificationIntent ->
+                PendingIntent.getActivity(MyApplication.applicationContext(), 0, notificationIntent, 0)
+            }
 
-    val pendingIntent: PendingIntent =
-        Intent(MyApplication.applicationContext(), MainActivity::class.java).let { notificationIntent ->
-            PendingIntent.getActivity(MyApplication.applicationContext(), 0, notificationIntent, 0)
-        }
-
-    val notification: Notification = Notification.Builder(MyApplication.applicationContext(), CHANNEL_ID)
-        .setContentTitle(MyApplication.applicationContext().getString(R.string.notification_title))
-        .setContentText(MyApplication.applicationContext().getString(R.string.notification_message))
-        .setContentIntent(pendingIntent)
-        .build()
+        val notification: Notification = Notification.Builder(MyApplication.applicationContext(), CHANNEL_ID)
+            .setContentTitle(MyApplication.applicationContext().getString(R.string.notification_title))
+            .setContentText(MyApplication.applicationContext().getString(R.string.notification_message))
+            .setContentIntent(pendingIntent)
+            .build()
+        MyApplication.applicationContext().startForegroundService(Intent(MyApplication.applicationContext(), MainActivity::class.java))
+    }
 
     fun startScan() {
         // check ble adapter and ble enabled
@@ -194,6 +196,7 @@ BleRepository {
                 statusTxt = "Connected"
                 isStatusChange = true
                 Log.d(TAG, "Connected to the GATT server")
+                startMyForeground()
                 gatt.discoverServices()
             } else if ( newState == BluetoothProfile.STATE_DISCONNECTED ) {
                 disconnectGattServer()
