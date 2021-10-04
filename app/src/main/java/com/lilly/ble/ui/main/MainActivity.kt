@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
             requestPermissions(PERMISSIONS, REQUEST_ALL_PERMISSION)
         }
 
+        startMyForeground()
 
         initObserver(binding)
 
@@ -171,6 +172,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    fun startMyForeground() {
+        val CHANNEL_ID = "FG0001"
+        val pendingIntent: PendingIntent =
+            Intent(MyApplication.applicationContext(), MainActivity::class.java).let { notificationIntent ->
+                PendingIntent.getActivity(MyApplication.applicationContext(), 0, notificationIntent, 0)
+            }
+
+        val notification: Notification = Notification.Builder(MyApplication.applicationContext(), CHANNEL_ID)
+            .setContentTitle(MyApplication.applicationContext().getString(R.string.notification_title))
+            .setContentText(MyApplication.applicationContext().getString(R.string.notification_message))
+            .setContentIntent(pendingIntent)
+            .build()
+        MyApplication.applicationContext().startForegroundService(Intent(MyApplication.applicationContext(), MainActivity::class.java))
+    }
+
 
 
 }
