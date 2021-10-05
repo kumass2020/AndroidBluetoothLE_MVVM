@@ -1,5 +1,6 @@
 package com.lilly.ble.ui.main
 
+import android.app.Service
 import android.app.Activity
 import android.app.Notification
 import android.app.PendingIntent
@@ -17,13 +18,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.lilly.ble.MyApplication
-import com.lilly.ble.PERMISSIONS
-import com.lilly.ble.R
-import com.lilly.ble.REQUEST_ALL_PERMISSION
+import com.lilly.ble.*
 import com.lilly.ble.adapter.BleListAdapter
 import com.lilly.ble.databinding.ActivityMainBinding
 import com.lilly.ble.viewmodel.MainViewModel
@@ -66,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         startMyForeground()
+        Service.startForeground(1, startMyForeground())
 
         initObserver(binding)
 
@@ -180,13 +180,16 @@ class MainActivity : AppCompatActivity() {
                 PendingIntent.getActivity(MyApplication.applicationContext(), 0, notificationIntent, 0)
             }
 
-        val notification: Notification = Notification.Builder(MyApplication.applicationContext(), CHANNEL_ID)
+        val notification: Notification = NotificationCompat.Builder(MyApplication.applicationContext(), CHANNEL_ID)
             .setContentTitle(MyApplication.applicationContext().getString(R.string.notification_title))
             .setContentText(MyApplication.applicationContext().getString(R.string.notification_message))
             .setContentIntent(pendingIntent)
-            .build()
-        MyApplication.applicationContext().startForegroundService(Intent(MyApplication.applicationContext(), MainActivity::class.java))
+                        .build()
+        startForeground(1, notification)
+        MyApplication.applicationContext().startForegroundService(Intent(MyApplication.applicationContext(), BleRepository::class.java))
+
     }
+
 
 
 

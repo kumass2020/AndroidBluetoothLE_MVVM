@@ -4,6 +4,7 @@ import android.content.ContextWrapper;
 import android.app.Activity
 import android.app.Notification
 import android.app.PendingIntent
+import android.app.Service
 import android.bluetooth.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
@@ -13,6 +14,7 @@ import android.content.Context
 import android.content.Context.BLUETOOTH_SERVICE
 import android.content.Intent
 import android.os.Build
+import android.os.IBinder
 import android.os.ParcelUuid
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -31,7 +33,7 @@ import kotlin.concurrent.schedule
 
 class
 
-BleRepository {
+BleRepository: Service {
 
     private val TAG = "Central"
 
@@ -260,7 +262,7 @@ BleRepository {
          */
 
         private fun readCharacteristic(characteristic: BluetoothGattCharacteristic) {
-
+            startForeground()
             val msg = characteristic.getStringValue(0)
 
             txtRead = msg
@@ -314,6 +316,10 @@ BleRepository {
         if( !success ) {
             Log.e(TAG, "Failed to write command")
         }
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        TODO("Not yet implemented")
     }
 
 
