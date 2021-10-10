@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by viewModel<MainViewModel>()
     private var adapter: BleListAdapter? = null
 
-
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,9 +62,6 @@ class MainActivity : AppCompatActivity() {
         if (!hasPermissions(this, PERMISSIONS)) {
             requestPermissions(PERMISSIONS, REQUEST_ALL_PERMISSION)
         }
-
-        startMyForeground()
-        Service.startForeground(1, startMyForeground())
 
         initObserver(binding)
 
@@ -150,6 +146,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        val intent = Intent(applicationContext, BleRepository::class.java);
+        if(Build.VERSION.SDK_INT >= 26) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
         return true
     }
     // Permission check
@@ -173,22 +175,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun startMyForeground() {
-        val CHANNEL_ID = "FG0001"
-        val pendingIntent: PendingIntent =
-            Intent(MyApplication.applicationContext(), MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(MyApplication.applicationContext(), 0, notificationIntent, 0)
-            }
 
-        val notification: Notification = NotificationCompat.Builder(MyApplication.applicationContext(), CHANNEL_ID)
-            .setContentTitle(MyApplication.applicationContext().getString(R.string.notification_title))
-            .setContentText(MyApplication.applicationContext().getString(R.string.notification_message))
-            .setContentIntent(pendingIntent)
-                        .build()
-        startForeground(1, notification)
-        MyApplication.applicationContext().startForegroundService(Intent(MyApplication.applicationContext(), BleRepository::class.java))
-
-    }
 
 
 

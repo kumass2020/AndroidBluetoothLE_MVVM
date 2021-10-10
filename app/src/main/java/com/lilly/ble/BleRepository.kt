@@ -18,6 +18,7 @@ import android.os.IBinder
 import android.os.ParcelUuid
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.lifecycle.MutableLiveData
@@ -33,7 +34,7 @@ import kotlin.concurrent.schedule
 
 class
 
-BleRepository: Service {
+BleRepository: Service() {
 
     private val TAG = "Central"
 
@@ -77,6 +78,11 @@ BleRepository: Service {
     val isConnect = MutableLiveData(Event(false))
     val listUpdate = MutableLiveData<Event<ArrayList<BluetoothDevice>?>>()
     val scrollDown = MutableLiveData<Event<Boolean>>()
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startMyForeground();
+        return START_NOT_STICKY
+    }
 
     fun startScan() {
         // check ble adapter and ble enabled
@@ -262,7 +268,6 @@ BleRepository: Service {
          */
 
         private fun readCharacteristic(characteristic: BluetoothGattCharacteristic) {
-            startForeground()
             val msg = characteristic.getStringValue(0)
 
             txtRead = msg
@@ -322,5 +327,23 @@ BleRepository: Service {
         TODO("Not yet implemented")
     }
 
+    fun startMyForeground() {
+        val CHANNEL_ID = "FG0001"
+//        val pendingIntent: PendingIntent =
+//            Intent(this, MainActivity::class.java).let { notificationIntent ->
+//                PendingIntent.getActivity(this, 0, notificationIntent, 0)
+//            }
+        val notificationIntent = Intent(this, MainActivity::class.java);
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(this,
+                 0, notificationIntent, 0);
 
+        val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(this.getString(R.string.notification_title))
+            .setContentText(this.getString(R.string.notification_message))
+            .setContentIntent(pendingIntent)
+            .build()
+        startForeground(1, notification)
+//        MyApplication.applicationContext().startForegroundService(Intent(MyApplication.applicationContext(), BleRepository::class.java))
+
+    }
 }
