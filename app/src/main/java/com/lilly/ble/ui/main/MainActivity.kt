@@ -1,9 +1,6 @@
 package com.lilly.ble.ui.main
 
-import android.app.Service
-import android.app.Activity
-import android.app.Notification
-import android.app.PendingIntent
+import android.app.*
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
@@ -136,6 +133,12 @@ class MainActivity : AppCompatActivity() {
         val bleEnableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
         requestEnableBleResult.launch(bleEnableIntent)
     }
+
+//    public void createNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.0) {
+//            NotificationManager manager = getBaseContext().getSystemService(NotificationManager.class)
+//        }
+//    }
 
     private fun hasPermissions(context: Context?, permissions: Array<String>): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {

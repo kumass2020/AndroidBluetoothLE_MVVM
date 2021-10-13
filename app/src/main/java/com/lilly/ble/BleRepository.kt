@@ -1,17 +1,12 @@
 package com.lilly.ble
 
-import android.content.ContextWrapper;
-import android.app.Activity
-import android.app.Notification
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.bluetooth.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
-import android.content.Context.BLUETOOTH_SERVICE
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
@@ -19,14 +14,11 @@ import android.os.ParcelUuid
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.content.res.TypedArrayUtils.getString
-import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.lifecycle.MutableLiveData
 import com.lilly.ble.ui.main.MainActivity
 import com.lilly.ble.util.BluetoothUtils
 import com.lilly.ble.util.Event
-import com.lilly.ble.viewmodel.MainViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.util.*
@@ -329,21 +321,51 @@ BleRepository: Service() {
 
     fun startMyForeground() {
         val CHANNEL_ID = "FG0001"
-//        val pendingIntent: PendingIntent =
-//            Intent(this, MainActivity::class.java).let { notificationIntent ->
-//                PendingIntent.getActivity(this, 0, notificationIntent, 0)
-//            }
-        val notificationIntent = Intent(this, MainActivity::class.java);
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this,
-                 0, notificationIntent, 0);
+        val pendingIntent: PendingIntent =
+            Intent(this, MainActivity::class.java).let { notificationIntent ->
+                PendingIntent.getActivity(this, 0, notificationIntent, 0)
+            }
+//        val notificationIntent = Intent(this, MainActivity::class.java);
+//        val pendingIntent: PendingIntent = PendingIntent.getActivity(this,
+//                 0, notificationIntent, 0);
 
-        val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(this.getString(R.string.notification_title))
-            .setContentText(this.getString(R.string.notification_message))
+        createServiceNotificationChannel();
+//        val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
+////            .setContentTitle(this.getString(R.string.notification_title))
+////            .setContentText(this.getString(R.string.notification_message))
+////            .setSmallIcon(R.mipmap.ic_launcher)
+//            .setContentTitle("hi")
+////            .setContentText("hi2")
+////            .setPriority(NotificationCompat.PRIORITY_HIGH)
+//            .setContentIntent(pendingIntent)
+//            .build()
+//        startForeground(1, notification)
+
+//        MyApplication.applicationContext().startForegroundService(Intent(MyApplication.applicationContext(), BleRepository::class.java))
+
+        val notification: Notification = NotificationCompat.Builder(this, "NetworkServiceChannel")
+            .setContentTitle("Network Service")
             .setContentIntent(pendingIntent)
             .build()
         startForeground(1, notification)
-//        MyApplication.applicationContext().startForegroundService(Intent(MyApplication.applicationContext(), BleRepository::class.java))
+    }
+//    val VERSION_CODES = Build.VERSION_CODES()
+//    val BuildInstance = Build()
+//    const val VERSION_CODES: String = BuildInstance.VERSION_CODES
 
+    fun createServiceNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val serviceChannel = NotificationChannel(
+                "NetworkServiceChannel",
+                "Network Service Channel",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+//            val manager = getSystemService(
+//                NotificationManager::class.java
+//            )
+            var manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(serviceChannel)
+
+        }
     }
 }
